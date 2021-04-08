@@ -26,7 +26,7 @@ public class QuickSort extends RecursiveAction {
             }
         } else { // divide into sub-sort
             int mid = start + (end - start) / 2;
-            Integer comp = array[mid];
+            Integer comp = array[start];
             int l, h;
             l = start;
             h = end;
@@ -37,9 +37,10 @@ public class QuickSort extends RecursiveAction {
 				while (l < h && array[l].compareTo(comp) <= 0) l++;
 				if (l < h) array[h--] = array[l];
             }
+            array[l] = comp;
             
-            QuickSort taskl = new QuickSort(start, h - 1, array);
-            QuickSort taskr = new QuickSort(l, end, array);
+            QuickSort taskl = new QuickSort(start, l - 1, array);
+            QuickSort taskr = new QuickSort(l + 1, end, array);
 
             taskl.fork();
             taskr.fork();
