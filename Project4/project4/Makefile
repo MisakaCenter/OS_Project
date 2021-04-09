@@ -26,14 +26,14 @@ sjf: task.o driver.o list.o CPU.o schedule_sjf.o
 fcfs: task.o driver.o list.o CPU.o schedule_fcfs.o
 	$(CC) $(CFLAGS) -o fcfs task.o driver.o schedule_fcfs.o list.o CPU.o
 
-priority: driver.o list.o CPU.o schedule_priority.o
+priority: task.o driver.o list.o CPU.o schedule_priority.o
 	$(CC) $(CFLAGS) -o priority task.o driver.o schedule_priority.o list.o CPU.o
 
 schedule_fcfs.o: schedule_fcfs.c
 	$(CC) $(CFLAGS) -c schedule_fcfs.c
 
-priority_rr: driver.o list.o CPU.o schedule_priority_rr.o
-	$(CC) $(CFLAGS) -o priority_rr driver.o schedule_priority_rr.o list.o CPU.o
+priority_rr: task.o driver.o list.o CPU.o schedule_priority_rr.o
+	$(CC) $(CFLAGS) -o priority_rr task.o driver.o schedule_priority_rr.o list.o CPU.o
 
 driver.o: driver.c
 	$(CC) $(CFLAGS) -c driver.c

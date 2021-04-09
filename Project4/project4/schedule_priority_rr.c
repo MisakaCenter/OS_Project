@@ -39,31 +39,54 @@ void schedule() {
 
 	while(head != NULL) {
 		struct node *h = head;
-		while (h -> next != NULL) {
-			h = h -> next;
+        struct node *i = head;
+		while (i != NULL) {
+			if (i -> task -> priority >= h -> task -> priority) {
+                h = i;
+            }
+            i = i -> next;
 		}
-
+        
 		Task *task = h -> task;
-		run(task, task -> burst);
-		delete(&head, task);
 
-		State *state = &(task -> state);
-		state -> waiting += time - state -> last_execute;
-		if (state -> last_execute == state -> arrival) {
-			state -> response = time - state -> last_execute;
-		}
-		state -> last_execute = time + task -> burst;
-		state -> turnaround = time + task -> burst - state -> arrival;
+		if (task -> burst <= QUANTUM) {
+			run(task, task -> burst);
+			delete(&head, task);
+
+			State *state = &(task -> state);
+			state -> waiting += time - state -> last_execute;
+			if (state -> last_execute == state -> arrival) {
+				state -> response = time - state -> last_execute;
+			}
+			state -> last_execute = time + task -> burst;
+			state -> turnaround = time + task -> burst - state -> arrival;
 		
-		task_num ++;
-		turnaround_total += state -> turnaround;
-		waiting_total += state -> waiting;
-		response_total += state -> response;
+			task_num ++;
+			turnaround_total += state -> turnaround;
+			waiting_total += state -> waiting;
+			response_total += state -> response;
 
-		time += task -> burst;
+			time += task -> burst;
 
-		free(task -> name);
-		free(task);
+			free(task -> name);
+			free(task);
+		} else {
+			run(task, QUANTUM);
+			delete(&head, task);
+			task -> burst = task -> burst - QUANTUM;
+
+			State *state = &(task -> state);
+			state -> waiting += time - state -> last_execute;
+			if (state -> last_execute == state -> arrival) {
+				state -> response = time - state -> last_execute;
+			}
+			state -> last_execute = time + QUANTUM;
+
+			time += QUANTUM;
+			insert(&head, task);
+		}
+
+		
 	}
 	printf("-----------------RESULT---------------------\n");
 	printf("Total Time: %d , Total Task: %d \n", time, task_num);

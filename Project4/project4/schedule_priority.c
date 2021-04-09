@@ -39,8 +39,12 @@ void schedule() {
 
 	while(head != NULL) {
 		struct node *h = head;
-		while (h -> next != NULL) {
-			h = h -> next;
+        struct node *i = head;
+		while (i != NULL) {
+			if (i -> task -> priority >= h -> task -> priority) {
+                h = i;
+            }
+            i = i -> next;
 		}
 
 		Task *task = h -> task;

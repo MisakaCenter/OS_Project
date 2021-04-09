@@ -56,7 +56,7 @@ void schedule() {
 		if (state -> last_execute == state -> arrival) {
 			state -> response = time - state -> last_execute;
 		}
-		state -> last_execute = time;
+		state -> last_execute = time + task -> burst;
 		state -> turnaround = time + task -> burst - state -> arrival;
 		
 		task_num ++;
