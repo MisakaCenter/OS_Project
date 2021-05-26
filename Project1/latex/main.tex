@@ -43,7 +43,7 @@
 \newcommand{\CourseName}{操作系统(Operating System)}
 \newcommand{\CourseCode}{CS307 \& CS356}
 \newcommand{\Semester}{2020-2021学年第二学期}
-\newcommand{\ProjectName} {Project 1: Introduction to Linux Kernel Modules} 
+\newcommand{\ProjectName} {\Huge{Project 1}} 
 \newcommand{\StudentName}{刘涵之}
 \newcommand{\StudentID}{519021910102}
 \usepackage[vmargin=1in,hmargin=.5in]{geometry}
@@ -97,9 +97,11 @@
 \theoremstyle{Solution}
 \newtheorem*{sol}{解}
 % \usepackage{graphicx}
+\title{Project 1: Introduction to Linux Kernel Modules}
+\date{}
 \begin{document}
+\maketitle
 \thispagestyle{FirstPageStyle}
-
 \section{Prepare Experiment Environment}
 In this section, I use VMware WorkStation to install the Ubuntu operating system. Then, I compile and upgrade the linux kernel to the latest version (5.11.3).
 \subsection{VMware WorkStation and Ubuntu OS}
@@ -277,9 +279,10 @@ Then i reboot the system and check the kernel version again. It shows that the n
 % \end{sol}
 
 \section{Kernel Modules Overview}
-In this section i will talk about the programming project at the end of Chapter 2\cite{book1}.
+In this section i will talk about the programming project at the end of Chapter 2.
 \subsection{Task 1 - Simple Module}
 
+I use the following commands to make and install my module (for Task 2 & 3, all most the same).
 \begin{lstlisting}
 sudo make
 sudo dmesg -C
@@ -288,6 +291,11 @@ dmesg
 sudo rmmod simple
 dmesg
 \end{lstlisting}
+
+
+In the Simple module, we are required to print the \textbf{Golden Ratio Prime} when initializing (simple\_init()) and print the \textbf{greatest common divisor} of 3300 and 24 when exiting (simple\_exit()).
+
+As written on the textbook, i find the constant GOLDEN\_RATIO\_PRIME in the <linux/hash.h> and gcd() in the <linux/hash.h>. The code of simple.c is displayed as follows.
 
 \begin{lstlisting}[language = c]
 #include <linux/init.h>
@@ -316,6 +324,7 @@ MODULE_DESCRIPTION("Simple Module");
 MODULE_AUTHOR("MisakaCenter");
 \end{lstlisting}
 
+For this task, the \textbf{Makefile} is written as follows.
 \begin{lstlisting}
 obj-m := simple.o
 all:
@@ -324,6 +333,8 @@ clean:
 	make -C /usr/src/linux-5.11.3/ M=$(shell pwd) clean
 \end{lstlisting}
 
+
+The result is shown as follows.
 \begin{figure}[H]
     \centering
     \includegraphics[width=380pt]{simple1.png}
@@ -331,15 +342,19 @@ clean:
     \label{88}
 \end{figure}
 
+
+More over, for preparation of the Task 2, i add the following code to the simple\_init.
 \begin{lstlisting}[language = c]
 printk(KERN_INFO "(Loading) Jiffies: %lu\n", jiffies);
 printk(KERN_INFO "HZ: %d\n", HZ);
 \end{lstlisting}
 
+and i add the following code to the simple\_exit.
 \begin{lstlisting}[language = c]
 printk(KERN_INFO "(Removing) Jiffies: %lu\n", jiffies);
 \end{lstlisting}
 
+The result is shown as follows.
 \begin{figure}[H]
     \centering
     \includegraphics[width=380pt]{simple2.png}
@@ -349,8 +364,9 @@ printk(KERN_INFO "(Removing) Jiffies: %lu\n", jiffies);
 
 \subsection{Task 2 - Jiffies Module}
 
+Design a kernel module that creates a /proc file named /proc/jiffies that reports the current value of jiffies when the /proc/jiffies file is read.
 
-
+As same as Task 1, jiffies can be get in <linux/jiffies.h>, and its type is unsigned long volatile. We can use \%lu to format its output. The code of jiffies.c is display as follows.
 \begin{lstlisting}[language = c]
 #include <linux/init.h>
 #include <linux/module.h>
@@ -404,6 +420,8 @@ MODULE_DESCRIPTION("Jiffies Module");
 MODULE_AUTHOR("MisakaCenter");
 \end{lstlisting}
 
+
+For this task, the \textbf{Makefile} is written as follows.
 \begin{lstlisting}
 obj-m := jiffies.o
 all:
@@ -412,6 +430,7 @@ clean:
 	make -C /usr/src/linux-5.11.3/ M=$(shell pwd) clean
 \end{lstlisting}
 
+The result is shown as follows.
 \begin{figure}[H]
     \centering
     \includegraphics[width=380pt]{jiff.png}
@@ -420,8 +439,16 @@ clean:
 \end{figure}
 
 \subsection{Task 3 - Seconds Module}
+Design a kernel module that creates a proc file named /proc/seconds that reports the number of elapsed seconds since the kernel module was loaded. This will involve using the value of jiffies as well as the HZ rate.
 
+To solve this task:
+\begin{itemize}
+    \item When initializing, record the current jiffies in the global variable \textbf{jiffies\_load}
+    \item jiffies / HZ turns out to be seconds
+    \item when /proc/seconds is read, (jiffies−jiffies\_load)/HZ is the seconds we need.
+\end{itemize}
 
+The code of seconds.c is display as follows.
 \begin{lstlisting}[language = c]
 #include <linux/init.h>
 #include <linux/module.h>
@@ -480,6 +507,8 @@ MODULE_DESCRIPTION("Seconds Module");
 MODULE_AUTHOR("MisakaCenter");
 \end{lstlisting}
 
+
+For this task, the \textbf{Makefile} is written as follows.
 \begin{lstlisting}
 obj-m := seconds.o
 all:
@@ -488,11 +517,12 @@ clean:
 	make -C /usr/src/linux-5.11.3/ M=$(shell pwd) clean
 \end{lstlisting}
 
+
+The result is shown as follows.
 \begin{figure}[H]
     \centering
     \includegraphics[width=380pt]{sec.png}
     \caption{Seconds Module}
     \label{722ds3}
 \end{figure}
-
 \end{document}
