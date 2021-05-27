@@ -4,7 +4,7 @@
 
 #define PAGE_NUM 256
 #define PAGE_SIZE 256
-#define FRAME_NUM 128
+#define FRAME_NUM 256
 #define FRAME_SIZE 256
 #define TLB_SIZE 16
 
